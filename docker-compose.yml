@@ -6,7 +6,7 @@ services:
     ports:
       - "2181:2181"
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_CLIENT_PORT: 2181      
 
 
   kafka1:
@@ -24,9 +24,15 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CREATE_TOPICS: "${KAFKA_TOPIC1}:1:1,${KAFKA_TOPIC2}:1:1:compact"
+     
   
-  
+  producer:
+    build: ./servers
+    container_name: producer
+    depends_on:
+      - kafka1
 
+  
   postgres:
     image: postgres:latest
     hostname: postgres
@@ -38,3 +44,5 @@ services:
       - ./sql_script:/docker-entrypoint-initdb.d
     ports:
       -  5432:5432
+     
+     
