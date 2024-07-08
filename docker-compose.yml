@@ -8,21 +8,34 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
 
 
-  kafka:
+  kafka1:
     image: wurstmeister/kafka
     ports:
       - "${KAFKA_PORT1}:${KAFKA_PORT1}"
-      - "${KAFKA_PORT2}:${KAFKA_PORT2}"
+    container_name: kafka1  
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_HOST_NAME: ${HOST_IP}
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:${KAFKA_PORT2},OUTSIDE://${HOST_IP}:${KAFKA_PORT1}
-      KAFKA_LISTENERS: INSIDE://0.0.0.0:${KAFKA_PORT2},OUTSIDE://0.0.0.0:${KAFKA_PORT1}
-      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CREATE_TOPICS: "${KAFKA_TOPIC1}:1:1,${KAFKA_TOPIC2}:1:1:compact" 
+
+  
+  kafka2:
+    image: wurstmeister/kafka
+    ports:
+      - "${KAFKA_PORT2}:${KAFKA_PORT1}"
+    container_name: kafka2  
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ADVERTISED_PORT: ${KAFKA_PORT2}
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_HOST_NAME: ${HOST_IP}  
+
+
+  producer:
+    build: ./servers
+    container_name: server_producer
+
+
 
 
   postgres:
